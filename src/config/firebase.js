@@ -1,22 +1,43 @@
-const { initializeApp, cert, getApps } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const fs = require("fs");
+const path = require("path");
 
-const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+const {
+  initializeApp,
+  cert,
+  getApps
+} = require("firebase-admin/app");
 
-if (!serviceAccountJson) {
-  throw new Error(
-    "FIREBASE_SERVICE_ACCOUNT environment variable is missing."
-  );
-}
+const {
+  getFirestore
+} = require("firebase-admin/firestore");
 
 let serviceAccount;
 
-try {
-  serviceAccount = JSON.parse(serviceAccountJson);
-} catch (error) {
-  throw new Error(
-    "FIREBASE_SERVICE_ACCOUNT contains invalid JSON."
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  try {
+    serviceAccount = JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT
+    );
+  } catch (error) {
+    throw new Error(
+      "FIREBASE_SERVICE_ACCOUNT contains invalid JSON."
+    );
+  }
+} else {
+  const localKeyPath = path.join(
+    __dirname,
+    "../../serviceAccountKey.json"
   );
+
+  if (!fs.existsSync(localKeyPath)) {
+    throw new Error(
+      "Firebase credentials not found. " +
+      "Add FIREBASE_SERVICE_ACCOUNT to the environment " +
+      "or provide serviceAccountKey.json locally."
+    );
+  }
+
+  serviceAccount = require(localKeyPath);
 }
 
 if (!getApps().length) {
