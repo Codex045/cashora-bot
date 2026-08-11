@@ -4,6 +4,9 @@ const express = require("express");
 const cors = require("cors");
 
 const postbackRoutes = require("./routes/postback");
+const cpxPostbackRoutes =
+  require("./routes/cpxPostback");
+
 
 const app = express();
 
@@ -12,6 +15,7 @@ const PORT = Number(
 );
 
 app.use(cors());
+
 
 app.use(
   express.json({
@@ -27,6 +31,8 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+
 
 app.use(
   "/api/postback",
