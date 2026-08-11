@@ -1,5 +1,11 @@
 require("dotenv").config();
 
+const express = require("express");
+const cors = require("cors");
+
+const postbackRoutes = require("./routes/postback");
+const cpxPostbackRoutes = require("./routes/cpxPostback");
+
 const { Telegraf, Markup } = require("telegraf");
 const { createOrGetUser, getUser } = require("./services/userService");
 const {
@@ -23,6 +29,54 @@ if (!BOT_TOKEN) {
 }
 
 const bot = new Telegraf(BOT_TOKEN);
+
+// ===============================
+// CASHORA API SERVER
+// ===============================
+
+const app = express();
+
+const PORT = Number(process.env.PORT || 10000);
+
+app.use(cors());
+
+app.use(
+  express.json({
+    limit: "1mb"
+  })
+);
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    service: "Cashora Backend",
+    status: "healthy",
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.use(
+  "/api/postback/cpx",
+  cpxPostbackRoutes
+);
+
+app.use(
+  "/api/postback",
+  postbackRoutes
+);
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: "Route not found."
+  });
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(
+    `🚀 Cashora API running on port ${PORT}`
+  );
+});
 
 // ===============================
 // MAIN MENU
