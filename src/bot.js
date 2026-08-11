@@ -245,12 +245,74 @@ bot.hears("📝 Surveys", async (ctx) => {
 // TASKS
 // ===============================
 
+// ===============================
+// TASKS / OFFERWALLS
+// ===============================
+
 bot.hears("📋 Tasks", async (ctx) => {
   await ctx.reply(
-    "📋 Tasks\n\n" +
-    "Available tasks will appear here.",
-    earnMenu
+    "📋 Cashora Tasks\n\n" +
+    "Choose an offerwall to start earning:",
+    {
+      reply_markup: {
+        keyboard: [
+          ["🟠 Wannads", "🟣 CPX Research"],
+          ["🔙 Back"]
+        ],
+        resize_keyboard: true
+      }
+    }
   );
+});
+
+// ===============================
+// WANNADS
+// ===============================
+
+bot.hears("🟠 Wannads", async (ctx) => {
+  try {
+    const userId = String(ctx.from.id);
+
+    const url =
+      `https://earn.wannads.com/wall?apiKey=${process.env.WANNADS_API_KEY}&userId=${encodeURIComponent(userId)}`;
+
+    await ctx.reply(
+      "🟠 Wannads Offerwall\n\n" +
+      "Tap the link below to open available offers:\n\n" +
+      url
+    );
+  } catch (error) {
+    console.error("❌ Wannads error:", error);
+
+    await ctx.reply(
+      "❌ Unable to open Wannads right now."
+    );
+  }
+});
+
+// ===============================
+// CPX RESEARCH
+// ===============================
+
+bot.hears("🟣 CPX Research", async (ctx) => {
+  try {
+    const userId = String(ctx.from.id);
+
+    const url =
+      `https://offers.cpx-research.com/index.php?app_id=${process.env.CPX_APP_ID}&ext_user_id=${encodeURIComponent(userId)}`;
+
+    await ctx.reply(
+      "🟣 CPX Research\n\n" +
+      "Tap the link below to open available surveys:\n\n" +
+      url
+    );
+  } catch (error) {
+    console.error("❌ CPX Research error:", error);
+
+    await ctx.reply(
+      "❌ Unable to open CPX Research right now."
+    );
+  }
 });
 
 // ===============================
